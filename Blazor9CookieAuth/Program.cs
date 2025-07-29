@@ -1,25 +1,51 @@
 using System.Security.Claims;
 using Blazor9CookieAuth.Components;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 // Register cookie auth scheme
-builder.Services.AddAuthentication("AdminCookie")
-    .AddCookie("AdminCookie", options => {
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
         options.LoginPath = "/login";
         options.LogoutPath = "/logout";
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.SlidingExpiration = true;
+
+        options.Events.OnSigningIn = context =>
+        {
+            Console.WriteLine("Signing in: " + context.Principal.Identity?.Name);
+            return Task.CompletedTask;
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("LocalApi")
+    .ConfigureHttpClient((sp, client) =>
+    {
+        var context = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+        if (context is not null)
+        {
+            var origin = $"{context.Request.Scheme}://{context.Request.Host}";
+            client.BaseAddress = new Uri(origin);
+        }
+    });
+builder.Services.AddScoped(sp =>
+{
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return factory.CreateClient("LocalApi");
+});
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -41,6 +67,9 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
@@ -48,17 +77,58 @@ app.MapRazorComponents<App>()
 
 app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [FromBody] string secret) =>
 {
-    var allowedSecrets = config.GetSection("AdminSecrets").Get<List<string>>();
+    Console.WriteLine($"Received secret {secret}");
+    // var allowedSecrets = config.GetSection("AdminSecrets").Get<List<string>>();
+    //
+    // if (allowedSecrets is null || !allowedSecrets.Contains(secret))
+    //     return Results.Unauthorized();
 
-    if (allowedSecrets is null || !allowedSecrets.Contains(secret))
-        return Results.Unauthorized();
+    if (secret != "foo") return Results.Unauthorized();
 
-    var claims = new[] { new Claim(ClaimTypes.Name, "AdminUser") };
-    var identity = new ClaimsIdentity(claims, "AdminCookie");
-    var principal = new ClaimsPrincipal(identity);
+    // var claims = new[] { new Claim(ClaimTypes.Name, "AdminUser") };
+    // var identity = new ClaimsIdentity(claims, "AdminCookie");
+    // var principal = new ClaimsPrincipal(identity);
+    var claims = new List<Claim>
+    {
+        new(ClaimTypes.Role, "Administrator"),
+    };
+    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    var authProperties = new AuthenticationProperties
+    {
+        IsPersistent = true
+    };
+    
+    // ctx.Response.Cookies.Append("TestCookie", "value", new CookieOptions
+    // {
+    //     Path = "/",
+    //     HttpOnly = false,
+    //     Secure = false,
+    //     SameSite = SameSiteMode.Lax
+    // });
 
-    await ctx.SignInAsync("AdminCookie", principal);
-    return Results.Ok();
+    // await ctx.SignInAsync("AdminCookie", principal, new AuthenticationProperties
+    // {
+    //     IsPersistent = true,
+    //     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
+    // });
+    await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+    Console.WriteLine("SignInAsync complete");
+    
+    // Log all Set-Cookie headers
+    if (ctx.Response.Headers.TryGetValue("Set-Cookie", out var setCookieHeaders))
+    {
+        foreach (var header in setCookieHeaders)
+        {
+            Console.WriteLine("Set-Cookie: " + header);
+        }
+    }
+    else
+    {
+        Console.WriteLine("No Set-Cookie header found.");
+    }
+    
+    //return Results.Ok();
+    return Results.Json(new { success = true }, statusCode: 200);
 });
 
 app.Run();
