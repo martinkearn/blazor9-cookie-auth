@@ -1,5 +1,5 @@
 @page "/login"
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 @inject NavigationManager Navigation
 @inject HttpClient Http 
 
@@ -7,7 +7,16 @@
 <button class="btn btn-primary" @onclick="LoginUser" type="button">Login</button>
 <p>@log</p>
 
-
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <p>Authorized</p>
+        </Authorized>
+        <NotAuthorized>
+            <p>NotAuthorized</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
 
 @code {
     private string secret = string.Empty;
@@ -15,18 +24,11 @@
 
     private async Task LoginUser()
     {
-        log += "Click triggered. ";
-        log += secret;
-        StateHasChanged();
-        var content = JsonContent.Create(secret);
-        var response = await Http.PostAsync("/api/auth/login", content);
-        log += response.StatusCode;
-        StateHasChanged();
+        var response = await Http.PostAsJsonAsync("/api/auth/login", secret);
 
         if (response.IsSuccessStatusCode)
         {
-            // Auth cookie was issued, but the circuit still unauthenticated
-            // Force a full reload so Blazor sees the auth state
+            // Auth cookie was issued, but the circuit still unauthenticated. Force a full reload so Blazor sees the auth state
             //Navigation.NavigateTo("/", forceLoad: true);
             log += "Logged in.";
             Navigation.NavigateTo("/", forceLoad: true);
@@ -34,7 +36,7 @@
         else
         {
             log += "Invalid secret.";
+            StateHasChanged();
         }
-        StateHasChanged();
     }
 }
