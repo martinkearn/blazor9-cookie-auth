@@ -1,0 +1,28 @@
+@page "/clientauth"
+@rendermode InteractiveWebAssembly
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<button class="btn btn-primary" @onclick="Login">Login as Admin</button>
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <p>Authorized</p>
+        </Authorized>
+        <NotAuthorized>
+            <p>NotAuthorized</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private async Task Login()
+    {
+        var response = await Http.PostAsJsonAsync("/api/auth/login", "foo");
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+    }
+}

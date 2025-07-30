@@ -75,6 +75,21 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Blazor9CookieAuth.Client._Imports).Assembly);
 
+app.MapGet("/auth/whoami", (HttpContext ctx) =>
+{
+    var user = ctx.User;
+    if (user?.Identity?.IsAuthenticated ?? false)
+    {
+        return Results.Ok(new
+        {
+            name = user.Identity.Name,
+            claims = user.Claims.Select(c => new { c.Type, c.Value })
+        });
+    }
+
+    return Results.Unauthorized();
+});
+
 app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [FromBody] string secret) =>
 {
     Console.WriteLine($"Received secret {secret}");
