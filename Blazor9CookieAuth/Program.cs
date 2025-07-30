@@ -31,11 +31,9 @@ builder.Services.AddHttpClient("LocalApi")
     .ConfigureHttpClient((sp, client) =>
     {
         var context = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
-        if (context is not null)
-        {
-            var origin = $"{context.Request.Scheme}://{context.Request.Host}";
-            client.BaseAddress = new Uri(origin);
-        }
+        if (context is null) return;
+        var origin = $"{context.Request.Scheme}://{context.Request.Host}";
+        client.BaseAddress = new Uri(origin);
     });
 builder.Services.AddScoped(sp =>
 {
