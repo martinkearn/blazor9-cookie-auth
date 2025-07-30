@@ -39,6 +39,7 @@ builder.Services.AddAuthorization(); // This enables the authorization system in
 builder.Services.AddCascadingAuthenticationState(); //This registers a service that enables authentication state to flow through your component tree in Blazor. It’s required for <CascadingAuthenticationState> and <AuthorizeView> to work.
 builder.Services.AddHttpContextAccessor(); // This registers IHttpContextAccessor, which lets you access the current HttpContext in places where it’s not injected automatically (inside the AuthApi).
 builder.Services.AddHttpClient(); // This registers the IHttpClientFactory service, which allows other services in your server project to use HttpClient via dependency injection. Although the server is not making http requests, InteractiveAuto means client pages are temporarily rendered on the server and so a IHttpClientFactory is needed as the DI container is composed on the server side.
+builder.Services.AddControllers(); // This registers the necessary services to support controller-based APIs in ASP.NET Core. Only needed if using full controller-based APIs, not needed for minimal apis
 
 var app = builder.Build();
 
@@ -63,6 +64,7 @@ app.UseAuthentication(); // This Enables the authentication middleware, which: V
 app.UseAuthorization(); // This Enables the authorization middleware, which: Evaluates [Authorize] attributes and applies access control based on roles, policies, or schemes. Depends on UseAuthentication() running before it. Required to enforce [Authorize] and similar logic.
 app.MapAuthEndpoints(); // This maps the custom /api/auth endpoints from AuthApi.cs
 app.MapMinimalApiEndpoints(); // This maps the custom /api/minimal endpoints from MinimalApi.cs
+app.MapControllers(); // Tells ASP.NET Core to find and map all [ApiController] classes in your project — so their [Route] and [Http...] attributes become active HTTP endpoints. Only needed if using full controller-based APIs, not needed for minimal apis
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
