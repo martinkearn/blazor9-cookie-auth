@@ -47,8 +47,8 @@
 
         if (response.IsSuccessStatusCode)
         {
-            // Auth cookie was issued, but the circuit still unauthenticated. Force a full reload so Blazor sees the auth state
-            Navigation.NavigateTo("/", forceLoad: true);
+            // Force a full reload so Blazor sees the auth state
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
         else
         {

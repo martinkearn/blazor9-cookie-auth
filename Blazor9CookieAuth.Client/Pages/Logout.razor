@@ -43,7 +43,7 @@
         if (response.IsSuccessStatusCode)
         {
             // Force a full reload so Blazor sees the auth state
-            Navigation.NavigateTo("/", forceLoad: true);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }
 }
