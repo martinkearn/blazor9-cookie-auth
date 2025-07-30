@@ -9,7 +9,7 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 
-builder.Services.AddAuthorizationCore(); // Enables support for [AuthorizeView] and cascading AuthenticationState
-builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthStateProvider>();
+builder.Services.AddAuthorizationCore(); // This enables support for [AuthorizeView] and cascading AuthenticationState
+builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthStateProvider>(); // This registers the custom authentication state provider (CookieAuthStateProvider) with the DI container as the implementation of AuthenticationStateProvider. 
 
 await builder.Build().RunAsync();
