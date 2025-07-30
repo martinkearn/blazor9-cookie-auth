@@ -1,0 +1,63 @@
+@page "/clientcallapi"
+@rendermode InteractiveWebAssembly
+@inject HttpClient Http 
+
+<PageTitle>Client Call Api</PageTitle>
+
+<h1>Client Call Apir</h1>
+
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>Authorized</Authorized>
+                <NotAuthorized>Not Authorized</NotAuthorized>
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </span>
+</p>
+
+<button class="btn btn-primary" @onclick="CallControllerApi">Call Controller Api</button>
+
+<br/>
+<br/>
+
+<button class="btn btn-primary" @onclick="CallMinimalApi">Call Minimal Api</button>
+
+<p role="status">@_message</p>
+
+@code {
+    private string? _message = "";
+
+    private async Task CallControllerApi()
+    {
+        var response = await Http.GetAsync("api/controllerapi");
+        await DisplayResult(response);
+    }
+    
+    private async Task CallMinimalApi()
+    {
+        var response = await Http.GetAsync("api/minimalapi");
+        await DisplayResult(response);
+        
+    }
+
+    private async Task DisplayResult(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            _message = await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            _message = $"{response.StatusCode}: {response.ReasonPhrase}";
+        }
+        StateHasChanged();
+    }
+}
