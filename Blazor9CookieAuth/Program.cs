@@ -93,7 +93,12 @@ app.MapGet("/auth/whoami", (HttpContext ctx) =>
 app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [FromBody] string secret) =>
 {
     Console.WriteLine($"Received secret {secret}");
-    // var allowedSecrets = config.GetSection("AdminSecrets").Get<List<string>>();
+    var allowedSecrets = config.GetSection("AdminSecrets").Get<List<string>>();
+    foreach (var allowedSecret in allowedSecrets)
+    {
+        Console.WriteLine($"Allowed secrets: {allowedSecret}");
+    }
+    
     //
     // if (allowedSecrets is null || !allowedSecrets.Contains(secret))
     //     return Results.Unauthorized();
@@ -144,6 +149,12 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
     
     //return Results.Ok();
     return Results.Json(new { success = true }, statusCode: 200);
+});
+
+app.MapPost("/api/auth/logout", async (HttpContext ctx) =>
+{
+    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return Results.Ok();
 });
 
 app.Run();

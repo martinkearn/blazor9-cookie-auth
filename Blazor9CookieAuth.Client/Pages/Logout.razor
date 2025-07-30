@@ -1,0 +1,30 @@
+@page "/logout"
+@rendermode InteractiveWebAssembly
+@inject NavigationManager Navigation
+@inject HttpClient Http 
+
+<button class="btn btn-primary" @onclick="LogoutUser" type="button">Logout</button>
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <p>Authorized</p>
+        </Authorized>
+        <NotAuthorized>
+            <p>NotAuthorized</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private async Task LogoutUser()
+    {
+        var response = await Http.PostAsync("/api/auth/logout", null);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Force a full reload so Blazor sees the auth state
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+    }
+}
