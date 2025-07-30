@@ -1,8 +1,6 @@
-using System.Security.Claims;
 using Blazor9CookieAuth.Components;
 using Blazor9CookieAuth.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
+using Blazor9CookieAuth.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,58 +62,10 @@ app.MapStaticAssets();
 app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapAuthEndpoints(); // This maps the custom //api/auth endpoints from AuthApi.cs
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Blazor9CookieAuth.Client._Imports).Assembly);
-
-app.MapGet("/api/auth/state", (HttpContext ctx) =>
-{
-    var user = ctx.User;
-    if (user?.Identity?.IsAuthenticated ?? false)
-    {
-        return Results.Ok(new
-        {
-            name = user.Identity.Name,
-            claims = user.Claims.Select(c => new { c.Type, c.Value })
-        });
-    }
-
-    return Results.NoContent();
-});
-
-app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [FromBody] string secret) =>
-{
-    // Get a list of secrets from config
-    var allowedSecrets = config.GetSection("AdminSecrets").Get<List<string>>();
-    if (allowedSecrets is null) return Results.NotFound("No allowed secrets are set on the server");
-    
-    // Verify secret is in the allowed list, if not return unauthorised
-    if (!allowedSecrets.Contains(secret)) return Results.Unauthorized();
-    
-    // Create claim details
-    var claims = new List<Claim>
-    {
-        new(ClaimTypes.Role, "Administrator"),
-    };
-    var claimsIdentity = new ClaimsIdentity(claims, Consts.AdminCookieName);
-    var authProperties = new AuthenticationProperties
-    {
-        IsPersistent = true
-    };
-    
-    // Login with the claim set above
-    await ctx.SignInAsync(Consts.AdminCookieName, new ClaimsPrincipal(claimsIdentity), authProperties);
-    Console.WriteLine("Login complete");
-    
-    // Return OK
-    return Results.Ok();
-});
-
-app.MapPost("/api/auth/logout", async (HttpContext ctx) =>
-{
-    await ctx.SignOutAsync(Consts.AdminCookieName);
-    return Results.Ok();
-});
 
 app.Run();
