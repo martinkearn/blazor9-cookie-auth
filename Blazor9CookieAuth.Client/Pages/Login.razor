@@ -3,24 +3,43 @@
 @inject NavigationManager Navigation
 @inject HttpClient Http 
 
-<input @bind="secret" class="form-control mb-2" placeholder="Enter secret" />
-<button class="btn btn-primary" @onclick="LoginUser" type="button">Login</button>
-<p>@log</p>
+<PageTitle>Login</PageTitle>
+
+<h1>Login</h1>
+
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>Authorized</Authorized>
+                <NotAuthorized>Not Authorized</NotAuthorized>
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </span>
+</p>
 
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            <p>Authorized</p>
+            <p>You are already logged in</p>
         </Authorized>
         <NotAuthorized>
-            <p>NotAuthorized</p>
+            <input @bind="secret" class="form-control mb-2" placeholder="Enter secret" />
+            <button class="btn btn-primary" @onclick="LoginUser" type="button">Login</button>
+            <p>@message</p>
         </NotAuthorized>
     </AuthorizeView>
 </CascadingAuthenticationState>
 
 @code {
     private string secret = string.Empty;
-    private string? log = "";
+    private string? message = "";
 
     private async Task LoginUser()
     {
@@ -29,13 +48,11 @@
         if (response.IsSuccessStatusCode)
         {
             // Auth cookie was issued, but the circuit still unauthenticated. Force a full reload so Blazor sees the auth state
-            //Navigation.NavigateTo("/", forceLoad: true);
-            log += "Logged in.";
             Navigation.NavigateTo("/", forceLoad: true);
         }
         else
         {
-            log += "Invalid secret.";
+            message = $"Login failed. Status {response.ReasonPhrase}";
             StateHasChanged();
         }
     }

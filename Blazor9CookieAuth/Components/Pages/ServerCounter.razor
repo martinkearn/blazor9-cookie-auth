@@ -1,0 +1,38 @@
+@page "/servercounter"
+@rendermode InteractiveServer
+
+<PageTitle>Server Counter</PageTitle>
+
+<h1>Server Counter</h1>
+
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <AuthorizeView>
+            <Authorized>Authorized</Authorized>
+            <NotAuthorized>Not Authorized</NotAuthorized>
+        </AuthorizeView>
+    </span>
+</p>
+
+<p>This counter is set for InteractiveServer render mode and should only run on the server.</p>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

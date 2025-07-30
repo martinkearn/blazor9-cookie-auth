@@ -1,9 +1,9 @@
-﻿@page "/counter"
-@rendermode InteractiveWebAssembly
+﻿@page "/autocounter"
+@rendermode InteractiveAuto
 
-<PageTitle>Client Counter</PageTitle>
+<PageTitle>Auto Counter</PageTitle>
 
-<h1>Client Counter</h1>
+<h1>Auto Counter</h1>
 
 <p>
     <span class="badge text-bg-primary">
@@ -22,7 +22,7 @@
     </span>
 </p>
 
-<p>This counter is set for InteractiveWebAssembly render mode and should only run on the client.</p>
+<p>This counter is set for InteractiveAuto render mode and should run on the server initially and then the client.</p>
 
 <p role="status">Current count: @currentCount</p>
 

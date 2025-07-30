@@ -3,15 +3,34 @@
 @inject NavigationManager Navigation
 @inject HttpClient Http 
 
-<button class="btn btn-primary" @onclick="LogoutUser" type="button">Logout</button>
+<PageTitle>Logout</PageTitle>
+
+<h1>Logout</h1>
+
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>Authorized</Authorized>
+                <NotAuthorized>Not Authorized</NotAuthorized>
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </span>
+</p>
 
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            <p>Authorized</p>
+            <button class="btn btn-primary" @onclick="LogoutUser" type="button">Logout</button>
         </Authorized>
         <NotAuthorized>
-            <p>NotAuthorized</p>
+            <p>You are not logged in.</p>
         </NotAuthorized>
     </AuthorizeView>
 </CascadingAuthenticationState>

@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Blazor9CookieAuth.Components.Shared
 
 <PageTitle>Home</PageTitle>
 
@@ -7,5 +6,19 @@
 
 Welcome to your new app.
 
-<AuthStatus />
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <AuthorizeView>
+            <Authorized>Authorized</Authorized>
+            <NotAuthorized>Not Authorized</NotAuthorized>
+        </AuthorizeView>
+    </span>
+</p>
+
 
