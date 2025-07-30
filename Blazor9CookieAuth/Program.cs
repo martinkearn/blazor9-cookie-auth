@@ -46,9 +46,8 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
-app.UseCookiePolicy();
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication(); // This Enables the authentication middleware, which: Validates incoming cookies (like your AdminAuthCookie), Populates HttpContext.User with the authenticated principal and claims. Required for [Authorize], <AuthorizeView>, or HttpContext.User to reflect the login state
+app.UseAuthorization(); // This Enables the authorization middleware, which: Evaluates [Authorize] attributes and applies access control based on roles, policies, or schemes. Depends on UseAuthentication() running before it. Required to enforce [Authorize] and similar logic.
 app.MapAuthEndpoints(); // This maps the custom //api/auth endpoints from AuthApi.cs
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
