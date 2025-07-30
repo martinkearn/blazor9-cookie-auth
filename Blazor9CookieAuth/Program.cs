@@ -87,7 +87,6 @@ app.MapGet("/auth/whoami", (HttpContext ctx) =>
         });
     }
 
-    //return Results.Unauthorized();
     return Results.NoContent();
 });
 

@@ -10,10 +10,11 @@ public class CookieAuthStateProvider(HttpClient http) : AuthenticationStateProvi
     {
         var result = await http.GetAsync("/auth/whoami");
 
+        // If the result is anything other than OK (api returns NoContent if not authenticated), issue a blank AuthenticationState
         if (result.StatusCode != HttpStatusCode.OK) return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         
-        var name = await result.Content.ReadAsStringAsync(); // Or parse JSON claims
-        var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, name), new Claim("IsAdmin", "true")], "AdminCookie");
+        // Create and return a ClaimsIdentity
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.Role, "Administrator")], "Cookies"); // "Cookies" is the same as CookieAuthenticationDefaults.AuthenticationScheme
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }
 }
