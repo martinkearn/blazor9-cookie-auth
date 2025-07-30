@@ -92,22 +92,13 @@ app.MapGet("/auth/whoami", (HttpContext ctx) =>
 
 app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [FromBody] string secret) =>
 {
-    Console.WriteLine($"Received secret {secret}");
+    // Get a list of secrets from config
     var allowedSecrets = config.GetSection("AdminSecrets").Get<List<string>>();
-    foreach (var allowedSecret in allowedSecrets)
-    {
-        Console.WriteLine($"Allowed secrets: {allowedSecret}");
-    }
+    if (allowedSecrets is null) return Results.NotFound("No allowed secrets are set on the server");
     
-    //
-    // if (allowedSecrets is null || !allowedSecrets.Contains(secret))
-    //     return Results.Unauthorized();
-
-    if (secret != "foo") return Results.Unauthorized();
-
-    // var claims = new[] { new Claim(ClaimTypes.Name, "AdminUser") };
-    // var identity = new ClaimsIdentity(claims, "AdminCookie");
-    // var principal = new ClaimsPrincipal(identity);
+    // Verify secret is in the allowed list, if not return unauthorised
+    if (!allowedSecrets.Contains(secret)) return Results.Unauthorized();
+    
     var claims = new List<Claim>
     {
         new(ClaimTypes.Role, "Administrator"),
@@ -118,19 +109,6 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
         IsPersistent = true
     };
     
-    // ctx.Response.Cookies.Append("TestCookie", "value", new CookieOptions
-    // {
-    //     Path = "/",
-    //     HttpOnly = false,
-    //     Secure = false,
-    //     SameSite = SameSiteMode.Lax
-    // });
-
-    // await ctx.SignInAsync("AdminCookie", principal, new AuthenticationProperties
-    // {
-    //     IsPersistent = true,
-    //     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
-    // });
     await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
     Console.WriteLine("SignInAsync complete");
     
