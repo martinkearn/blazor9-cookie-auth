@@ -99,6 +99,7 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
     // Verify secret is in the allowed list, if not return unauthorised
     if (!allowedSecrets.Contains(secret)) return Results.Unauthorized();
     
+    // Create claim details
     var claims = new List<Claim>
     {
         new(ClaimTypes.Role, "Administrator"),
@@ -109,24 +110,12 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
         IsPersistent = true
     };
     
+    // Login with the claim set above
     await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-    Console.WriteLine("SignInAsync complete");
+    Console.WriteLine("Login complete");
     
-    // Log all Set-Cookie headers
-    if (ctx.Response.Headers.TryGetValue("Set-Cookie", out var setCookieHeaders))
-    {
-        foreach (var header in setCookieHeaders)
-        {
-            Console.WriteLine("Set-Cookie: " + header);
-        }
-    }
-    else
-    {
-        Console.WriteLine("No Set-Cookie header found.");
-    }
-    
-    //return Results.Ok();
-    return Results.Json(new { success = true }, statusCode: 200);
+    // Return OK
+    return Results.Ok();
 });
 
 app.MapPost("/api/auth/logout", async (HttpContext ctx) =>
