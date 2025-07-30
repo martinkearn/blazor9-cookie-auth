@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const string adminCookieName = "AdminCookie";
+
 // Add services to the container.
 builder.Services
     .AddRazorComponents()
@@ -14,19 +16,14 @@ builder.Services
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 // Register cookie auth scheme
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => {
+builder.Services.AddAuthentication(adminCookieName)
+    .AddCookie(adminCookieName,options => {
         options.LoginPath = "/login";
         options.LogoutPath = "/logout";
+        options.Cookie.Name = adminCookieName;
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.SlidingExpiration = true;
-
-        options.Events.OnSigningIn = context =>
-        {
-            Console.WriteLine("Signing in: " + context.Principal.Identity?.Name);
-            return Task.CompletedTask;
-        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
@@ -104,14 +101,14 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
     {
         new(ClaimTypes.Role, "Administrator"),
     };
-    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    var claimsIdentity = new ClaimsIdentity(claims, adminCookieName);
     var authProperties = new AuthenticationProperties
     {
         IsPersistent = true
     };
     
     // Login with the claim set above
-    await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+    await ctx.SignInAsync(adminCookieName, new ClaimsPrincipal(claimsIdentity), authProperties);
     Console.WriteLine("Login complete");
     
     // Return OK
@@ -120,7 +117,7 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
 
 app.MapPost("/api/auth/logout", async (HttpContext ctx) =>
 {
-    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    await ctx.SignOutAsync(adminCookieName);
     return Results.Ok();
 });
 

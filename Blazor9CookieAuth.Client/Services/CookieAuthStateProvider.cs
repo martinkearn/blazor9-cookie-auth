@@ -14,7 +14,7 @@ public class CookieAuthStateProvider(HttpClient http) : AuthenticationStateProvi
         if (result.StatusCode != HttpStatusCode.OK) return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         
         // If the result is OK, create and return a ClaimsIdentity
-        var identity = new ClaimsIdentity([new Claim(ClaimTypes.Role, "Administrator")], "Cookies"); // "Cookies" is the same as CookieAuthenticationDefaults.AuthenticationScheme
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.Role, "Administrator")], "AdminCookie"); // "Cookies" is the same as CookieAuthenticationDefaults.AuthenticationScheme
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }
 }
