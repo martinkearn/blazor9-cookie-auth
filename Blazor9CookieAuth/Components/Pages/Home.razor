@@ -5,3 +5,20 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <AuthorizeView>
+            <Authorized>Authorized</Authorized>
+            <NotAuthorized>Not Authorized</NotAuthorized>
+        </AuthorizeView>
+    </span>
+</p>
+
+

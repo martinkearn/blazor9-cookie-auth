@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Blazor9CookieAuth.Client\Blazor9CookieAuth.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.7" />
+    <ProjectReference Include="..\Blazor9CookieAuth.Models\Blazor9CookieAuth.Models.csproj" />
   </ItemGroup>
 
 </Project>
