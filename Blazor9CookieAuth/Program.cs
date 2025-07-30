@@ -22,23 +22,10 @@ builder.Services.AddAuthentication(Consts.AdminCookieName)
         options.SlidingExpiration = true; // This option controls whether the cookie’s expiration time is refreshed (slid forward) with each request made by the user. Every time the user makes a request before the cookie expires, the system resets the expiration timer; the user stays logged in as long as they are active.
         options.ExpireTimeSpan = TimeSpan.FromDays(365); // This option sets the authentication cookie to expire 365 days after login (or after each request if sliding expiration is enabled).
     });
-builder.Services.AddAuthorization();
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient("LocalApi")
-    .ConfigureHttpClient((sp, client) =>
-    {
-        var context = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
-        if (context is null) return;
-        var origin = $"{context.Request.Scheme}://{context.Request.Host}";
-        client.BaseAddress = new Uri(origin);
-    });
-builder.Services.AddScoped(sp =>
-{
-    var factory = sp.GetRequiredService<IHttpClientFactory>();
-    return factory.CreateClient("LocalApi");
-});
-builder.Services.AddControllers();
+builder.Services.AddAuthorization(); // This enables the authorization system in ASP.NET Core. Required to use [Authorize] attributes and <AuthorizeView> components.
+builder.Services.AddCascadingAuthenticationState(); //This registers a service that enables authentication state to flow through your component tree in Blazor. It’s required for <CascadingAuthenticationState> and <AuthorizeView> to work.
+builder.Services.AddHttpContextAccessor(); // This registers IHttpContextAccessor, which lets you access the current HttpContext in places where it’s not injected automatically (inside the AuthApi).
+builder.Services.AddHttpClient(); // This registers the IHttpClientFactory service, which allows other services in your server project to use HttpClient via dependency injection. Although the server is not making http requests, InteractiveAuto means client pages are temporarily rendered on the server and so a IHttpClientFactory is needed as the DI container is composed on the server side.
 
 var app = builder.Build();
 
