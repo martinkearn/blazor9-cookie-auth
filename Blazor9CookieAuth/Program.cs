@@ -21,6 +21,19 @@ builder.Services.AddAuthentication(Consts.AdminCookieName)
         options.Cookie.SameSite = SameSiteMode.Strict; // This option tells browsers: "Only send this cookie in first-party requests — never in any cross-site request, even top-level navigation from another origin."
         options.SlidingExpiration = true; // This option controls whether the cookie’s expiration time is refreshed (slid forward) with each request made by the user. Every time the user makes a request before the cookie expires, the system resets the expiration timer; the user stays logged in as long as they are active.
         options.ExpireTimeSpan = TimeSpan.FromDays(365); // This option sets the authentication cookie to expire 365 days after login (or after each request if sliding expiration is enabled).
+        
+        // This code ensures that if users access pages with [Authorize] without being authenticated, they are redirected as per options.LoginPath. However, if an api which has [Authorize] receives and unauthenticated request, a 401 is returned
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            }
+
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
     });
 builder.Services.AddAuthorization(); // This enables the authorization system in ASP.NET Core. Required to use [Authorize] attributes and <AuthorizeView> components.
 builder.Services.AddCascadingAuthenticationState(); //This registers a service that enables authentication state to flow through your component tree in Blazor. It’s required for <CascadingAuthenticationState> and <AuthorizeView> to work.
@@ -48,7 +61,8 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.UseAuthentication(); // This Enables the authentication middleware, which: Validates incoming cookies (like your AdminAuthCookie), Populates HttpContext.User with the authenticated principal and claims. Required for [Authorize], <AuthorizeView>, or HttpContext.User to reflect the login state
 app.UseAuthorization(); // This Enables the authorization middleware, which: Evaluates [Authorize] attributes and applies access control based on roles, policies, or schemes. Depends on UseAuthentication() running before it. Required to enforce [Authorize] and similar logic.
-app.MapAuthEndpoints(); // This maps the custom //api/auth endpoints from AuthApi.cs
+app.MapAuthEndpoints(); // This maps the custom /api/auth endpoints from AuthApi.cs
+app.MapMinimalApiEndpoints(); // This maps the custom /api/minimal endpoints from MinimalApi.cs
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
