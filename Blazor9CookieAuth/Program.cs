@@ -19,7 +19,7 @@ builder.Services.AddAuthentication(Consts.AdminCookieName)
         options.LoginPath = "/login"; // This option tells the authentication middleware “If a user tries to access a resource that requires authentication and they are not signed in, redirect them to /login”. It only applies when using automatic redirects, such as [Authorize] on Razor pages
         options.LogoutPath = "/logout"; // As LoginPath but for log out
         options.Cookie.Name = Consts.AdminCookieName;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // This option controls whether the authentication cookie is sent only over HTTPS or also over HTTP. CookieSecurePolicy.Always means HTTPS
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.SlidingExpiration = true;
     });
