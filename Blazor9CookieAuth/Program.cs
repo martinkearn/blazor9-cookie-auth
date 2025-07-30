@@ -87,7 +87,8 @@ app.MapGet("/auth/whoami", (HttpContext ctx) =>
         });
     }
 
-    return Results.Unauthorized();
+    //return Results.Unauthorized();
+    return Results.NoContent();
 });
 
 app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [FromBody] string secret) =>
