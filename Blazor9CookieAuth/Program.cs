@@ -1,12 +1,10 @@
 using System.Security.Claims;
 using Blazor9CookieAuth.Components;
+using Blazor9CookieAuth.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
-
-const string adminCookieName = "AdminCookie";
 
 // Add services to the container.
 builder.Services
@@ -16,11 +14,11 @@ builder.Services
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 // Register cookie auth scheme
-builder.Services.AddAuthentication(adminCookieName)
-    .AddCookie(adminCookieName,options => {
+builder.Services.AddAuthentication(Consts.AdminCookieName)
+    .AddCookie(Consts.AdminCookieName,options => {
         options.LoginPath = "/login";
         options.LogoutPath = "/logout";
-        options.Cookie.Name = adminCookieName;
+        options.Cookie.Name = Consts.AdminCookieName;
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.SlidingExpiration = true;
@@ -101,14 +99,14 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
     {
         new(ClaimTypes.Role, "Administrator"),
     };
-    var claimsIdentity = new ClaimsIdentity(claims, adminCookieName);
+    var claimsIdentity = new ClaimsIdentity(claims, Consts.AdminCookieName);
     var authProperties = new AuthenticationProperties
     {
         IsPersistent = true
     };
     
     // Login with the claim set above
-    await ctx.SignInAsync(adminCookieName, new ClaimsPrincipal(claimsIdentity), authProperties);
+    await ctx.SignInAsync(Consts.AdminCookieName, new ClaimsPrincipal(claimsIdentity), authProperties);
     Console.WriteLine("Login complete");
     
     // Return OK
@@ -117,7 +115,7 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, IConfiguration config, [F
 
 app.MapPost("/api/auth/logout", async (HttpContext ctx) =>
 {
-    await ctx.SignOutAsync(adminCookieName);
+    await ctx.SignOutAsync(Consts.AdminCookieName);
     return Results.Ok();
 });
 

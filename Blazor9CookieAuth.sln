@@ -6,6 +6,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor9CookieAuth", "Blazor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor9CookieAuth.Client", "Blazor9CookieAuth.Client\Blazor9CookieAuth.Client.csproj", "{F28032AC-576F-4539-A242-717FC4000346}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor9CookieAuth.Models", "Blazor9CookieAuth.Models\Blazor9CookieAuth.Models.csproj", "{818AD642-ED4A-4C48-B14E-03D1B787ACB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,18 @@ Global
 		{29A2918B-8AD4-4775-B806-46C17EABDBC9}.Release|x64.Build.0 = Release|Any CPU
 		{29A2918B-8AD4-4775-B806-46C17EABDBC9}.Release|x86.ActiveCfg = Release|Any CPU
 		{29A2918B-8AD4-4775-B806-46C17EABDBC9}.Release|x86.Build.0 = Release|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Debug|x64.Build.0 = Debug|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Debug|x86.Build.0 = Debug|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Release|x64.ActiveCfg = Release|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Release|x64.Build.0 = Release|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Release|x86.ActiveCfg = Release|Any CPU
+		{818AD642-ED4A-4C48-B14E-03D1B787ACB6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
