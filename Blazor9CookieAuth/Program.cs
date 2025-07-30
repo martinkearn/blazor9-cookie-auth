@@ -16,8 +16,8 @@ builder.Services
 // Register cookie auth scheme
 builder.Services.AddAuthentication(Consts.AdminCookieName)
     .AddCookie(Consts.AdminCookieName,options => {
-        options.LoginPath = "/login";
-        options.LogoutPath = "/logout";
+        options.LoginPath = "/login"; // This option tells the authentication middleware “If a user tries to access a resource that requires authentication and they are not signed in, redirect them to /login”. It only applies when using automatic redirects, such as [Authorize] on Razor pages
+        options.LogoutPath = "/logout"; // As LoginPath but for log out
         options.Cookie.Name = Consts.AdminCookieName;
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Cookie.SameSite = SameSiteMode.Lax;

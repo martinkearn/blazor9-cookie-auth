@@ -1,0 +1,27 @@
+@page "/serverauthorisedpage"
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<PageTitle>Server Authorised Page</PageTitle>
+
+<h1>Server Authorised Page</h1>
+
+<p>
+    <span class="badge text-bg-primary">
+        @(RendererInfo.IsInteractive ? "Interactive" : "Not Interactive") (@RendererInfo.Name)
+    </span>
+</p>
+
+<p>
+    <span class="badge text-bg-primary">
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>Authorized</Authorized>
+                <NotAuthorized>Not Authorized</NotAuthorized>
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </span>
+</p>
+
+<p>This whole page is protected by [Authorize]. If you can access this page, you are authorised.</p>
+<p>If you attempt to access this page but are not authorised, you will be redirected to the login page.</p>
