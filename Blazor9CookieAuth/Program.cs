@@ -20,8 +20,9 @@ builder.Services.AddAuthentication(Consts.AdminCookieName)
         options.LogoutPath = "/logout"; // As LoginPath but for log out
         options.Cookie.Name = Consts.AdminCookieName;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // This option controls whether the authentication cookie is sent only over HTTPS or also over HTTP. CookieSecurePolicy.Always means HTTPS
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.SlidingExpiration = true;
+        options.Cookie.SameSite = SameSiteMode.Strict; // This option tells browsers: "Only send this cookie in first-party requests — never in any cross-site request, even top-level navigation from another origin."
+        options.SlidingExpiration = true; // This option controls whether the cookie’s expiration time is refreshed (slid forward) with each request made by the user. Every time the user makes a request before the cookie expires, the system resets the expiration timer; the user stays logged in as long as they are active.
+        options.ExpireTimeSpan = TimeSpan.FromDays(365); // This option sets the authentication cookie to expire 365 days after login (or after each request if sliding expiration is enabled).
     });
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
