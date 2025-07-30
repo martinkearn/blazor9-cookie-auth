@@ -8,12 +8,12 @@ public class CookieAuthStateProvider(HttpClient http) : AuthenticationStateProvi
 {
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var result = await http.GetAsync("/auth/whoami");
+        var result = await http.GetAsync("/api/auth/state");
 
         // If the result is anything other than OK (api returns NoContent if not authenticated), issue a blank AuthenticationState
         if (result.StatusCode != HttpStatusCode.OK) return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         
-        // Create and return a ClaimsIdentity
+        // If the result is OK, create and return a ClaimsIdentity
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.Role, "Administrator")], "Cookies"); // "Cookies" is the same as CookieAuthenticationDefaults.AuthenticationScheme
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }

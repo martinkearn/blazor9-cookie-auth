@@ -75,7 +75,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Blazor9CookieAuth.Client._Imports).Assembly);
 
-app.MapGet("/auth/whoami", (HttpContext ctx) =>
+app.MapGet("/api/auth/state", (HttpContext ctx) =>
 {
     var user = ctx.User;
     if (user?.Identity?.IsAuthenticated ?? false)
